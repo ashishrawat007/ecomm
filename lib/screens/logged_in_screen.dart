@@ -7,6 +7,10 @@ class LoggedInScreen extends StatelessWidget {
  final user =FirebaseAuth.instance.currentUser;
   @override
   Widget build(BuildContext context) {
+    var imgUrl = user!.photoURL ?? "no image" ;
+    var userName = user!.displayName ?? "no image" ;
+    var email = user!.email ?? "no image" ;
+
     return Scaffold(
       backgroundColor: Colors.grey,
       appBar: AppBar(
@@ -19,57 +23,55 @@ class LoggedInScreen extends StatelessWidget {
 
         ),
       ),
-      body: Column(
-        children: [
-          Container(
-            child: Text("hello"),
-          ),
-          Center(
-            child: Container(
-              child: user.email != null
-              ?
-              CircleAvatar(
-                minRadius: 30,
-                maxRadius: 50,
-                backgroundImage: NetworkImage(user!.photoURL!) ,
-              )
-                  :
-              CircleAvatar(
-                minRadius: 30,
-                maxRadius: 50,
-                backgroundImage: NetworkImage(user!.photoURL!) ,
-              )
+      body: SafeArea(
+        child: Column(
+          children: [
+
+            Center(
+              child: Container(
+                child:
+                    imgUrl == "no image"
+                        ?
+                        Text("Upload Image")
+                        :
+                      Image.network(imgUrl)
+
+              ),
             ),
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          Text(user!.displayName!,
-          style: TextStyle(
-            fontSize: 20
-          ),
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          Text(user!.email!,
+            SizedBox(
+              height: 10,
+            ),
+            Text(userName,
             style: TextStyle(
-                fontSize: 20
+              fontSize: 20
             ),
-          ),
-          SizedBox(
-            height: 10,
-          ),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Text(email,
+              style: TextStyle(
+                  fontSize: 20
+              ),
+            ),
+            SizedBox(
+              height: 10,
+            ),
 
-          ElevatedButton(onPressed: (){
-            //final provider =
-            // Provider.of<GoogleSigninProvider>(context,listen: false);
-            // provider.logout();
-          },
-           child: Text("logout"))
+            ElevatedButton(onPressed: (){
+
+              final provider =
+              Provider.of<GoogleSigninProvider>(context,listen: false);
+              provider.logout();
+           print(user!.photoURL);
 
 
-        ],
+            },
+             child: Text("logout"))
+
+
+          ],
+        ),
       ),
     );
   }
