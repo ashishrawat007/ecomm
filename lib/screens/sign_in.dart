@@ -1,14 +1,18 @@
 import 'package:e_comm/provider/google_signin_provider.dart';
+import 'package:e_comm/screens/forgot_password.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_awesome_buttons/flutter_awesome_buttons.dart';
-import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_icons/flutter_icons.dart';
+import 'package:flutter_signin_button/button_view.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:auth_buttons/auth_buttons.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+
+
+import 'phone_auth_screen.dart';
+import 'signup.dart';
 import 'package:provider/provider.dart';
+
 class SigninScreen extends StatefulWidget {
   @override
   _SigninScreenState createState() => _SigninScreenState();
@@ -16,12 +20,34 @@ class SigninScreen extends StatefulWidget {
 
 class _SigninScreenState extends State<SigninScreen> {
   final _formKey = GlobalKey<FormState>();
-
+  var email = "";
+  var password = "";
   final nameController = TextEditingController();
   final passController = TextEditingController();
   bool remember = false;
+  Widget SocialMediaLogin(IconData icon , double pad ,var clr)
+  {
+    return   InkWell(
+      onTap: ()
+      {
 
+      },
+      child: Container(
+        margin: EdgeInsets.symmetric(
+            horizontal: 15),
 
+        height:40,
+        width: 50,
+        decoration: BoxDecoration(
+          color: Colors.grey[200],
+          shape: BoxShape.circle,
+        ),
+        child: Center(child: Icon(icon,color: clr)),
+
+      ),
+    );
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,9 +102,16 @@ class _SigninScreenState extends State<SigninScreen> {
                       children: [
                         TextFormField(
                           keyboardType: TextInputType.emailAddress,
-                         controller: nameController,
+                          controller: nameController,
                           onChanged: (value) {},
-                          validator: (value) {},
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please Enter Email';
+                            } else if (!value.contains('@')) {
+                              return 'Please Enter Valid Email';
+                            }
+                            return null;
+                          },
                           decoration: InputDecoration(
                             labelText: "Email Id",
                             hintText: "Enter your email",
@@ -93,15 +126,15 @@ class _SigninScreenState extends State<SigninScreen> {
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10)),
                             floatingLabelBehavior: FloatingLabelBehavior.always,
-                            suffixIcon: SvgPicture.asset(
-                                "assets/icons/Mail.svg",
-                                fit: BoxFit.scaleDown),
+                            // suffixIcon: SvgPicture.asset(
+                            //     "assets/icons/Mail.svg",
+                            //     fit: BoxFit.scaleDown),
                           ),
                         ),
                         SizedBox(height: 30),
                         TextFormField(
                           obscureText: true,
-                         controller: passController,
+                          controller: passController,
                           validator: (value) {},
                           decoration: InputDecoration(
                             labelText: "Password",
@@ -117,53 +150,68 @@ class _SigninScreenState extends State<SigninScreen> {
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10)),
                             floatingLabelBehavior: FloatingLabelBehavior.always,
-                            suffixIcon: SvgPicture.asset(
-                                "assets/icons/Lock.svg",
-                                fit: BoxFit.scaleDown),
+                            // suffixIcon: SvgPicture.asset(
+                            //     "assets/icons/Lock.svg",
+                            //     fit: BoxFit.scaleDown),
                           ),
                         ),
                         SizedBox(height: 10),
-                        Row(
-                          children: [
-                            Checkbox(
-                              value: remember,
-                              activeColor: Colors.pink,
-                              onChanged: (value) {
-                                setState(() {
-                                  remember = value!;
-                                });
-                              },
-                            ),
-                            Text("Remember me"),
-                            Spacer(),
-                            GestureDetector(
-                              onTap: () {
-                                // Navigator.of(context).push(MaterialPageRoute(
-                                //     builder: (BuildContext context) => ForgotPassword()));
-                              },
-                              child: Text(
-                                "Forgot Password",
-                              ),
-                            )
-                          ],
-                        ),
+
                         //FormError(errors: errors),
                       ],
                     ),
                   ),
                 ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20,0,20,0),
+                  child: Row(
+                    children: [
+                      Checkbox(
+                        value: remember,
+                        activeColor: Colors.pink,
+                        onChanged: (value) {
+                          setState(() {
+                            remember = value!;
+                          });
+                        },
+                      ),
+                      Text("Remember me"),
+                      Spacer(),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (BuildContext context) => ForgotPassword()));
+                        },
+                        child: Text(
+                          "Forgot Password ?",
+                        ),
+                      )
+                    ],
+                  ),
+                ),
                 InkWell(
                   onTap: () {
-                    String email = nameController.text;
-                    String pass = passController.text;
+                    // Validate returns true if the form is valid, otherwise false.
+                    if (_formKey.currentState!.validate()) {
+                      setState(() {
+                        email = nameController.text;
+                        password = passController.text;
+                      });
+                    final provider = Provider.of<GoogleSigninProvider>(context,
+                        listen: false);
 
-                    final provider =
-                    Provider.of<GoogleSigninProvider>(context,listen: false);
-                    provider.signUp(
-                            email,
-                            pass
-                    );
+                    provider.userLogin(email, password,context);  ;
 
+                    }
+                    // print(FirebaseAuth.instance.currentUser);
+                    // FirebaseAuth.instance.currentUser;
+                    // String email = nameController.text;
+                    // String pass = passController.text;
+                    //
+                    // final provider = Provider.of<GoogleSigninProvider>(context,
+                    //     listen: false);
+                    //
+                    // provider.signIn(email, pass,context);
                   },
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
@@ -183,6 +231,45 @@ class _SigninScreenState extends State<SigninScreen> {
                       child: Center(
                         child: Text(
                           'Log in',
+                          style: TextStyle(
+                              fontFamily: "Montserrat Regular",
+                              fontSize: 16,
+                              color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 20),
+                InkWell(
+
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => PhoneAuthScreen()),
+                    );
+
+                    // Navigator.of(context).push(MaterialPageRoute(
+                    //     builder: (BuildContext context) => PhoneAuthScreen()));
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+                    child: Container(
+                      height: MediaQuery.of(context).size.height * 0.0620,
+                      width: MediaQuery.of(context).size.width * 0.900,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              Colors.black.withOpacity(0.7),
+                              Colors.black.withOpacity(0.7),
+                            ],
+                          )),
+                      child: Center(
+                        child: Text(
+                          'Log in Using Phone No',
                           style: TextStyle(
                               fontFamily: "Montserrat Regular",
                               fontSize: 16,
@@ -214,33 +301,77 @@ class _SigninScreenState extends State<SigninScreen> {
                           color: Colors.black,
                           thickness: 1,
                           height: 36,
-                        )),
+                        )
+                    ),
                   ),
                 ]),
                 SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    GoogleButton(
-                      onPressed: () {
-                      final provider =
-                          Provider.of<GoogleSigninProvider>(context,listen: false);
-                          provider.googleLogin();
-                      },
-                      buttonColor: Colors.red[700],
-                    ),
-                    SizedBox(width: 20),
-                    FacebookButton(
-                      onPressed: () {
+                    InkWell(
+                      onTap: ()
+                      {
+                        final provider = Provider.of<GoogleSigninProvider>(
+                                  context,
+                                  listen: false);
+                              provider.signInWithFacebook();
+
 
                       },
+                      child: Container(
+                        margin: EdgeInsets.symmetric(
+                            horizontal: 15),
+                        height:40,
+                        width: 50,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[200],
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(child: Icon(Ionicons.logo_facebook,color: Colors.blue[700])),
+
+                      ),
                     ),
-                    SizedBox(width: 20),
-                    TwitterButton(
-                      onPressed: () {
+                    InkWell(
+                      onTap: ()
+                      {
+                        final provider = Provider.of<GoogleSigninProvider>(
+                            context,
+                            listen: false);
+                        provider.googleLogin();
+                      },
+                      child: Container(
+                        margin: EdgeInsets.symmetric(
+                            horizontal: 15),
+                        height:40,
+                        width: 50,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[200],
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(child: Icon(Ionicons.logo_google,color: Colors.red)),
+
+                      ),
+                    ),
+                    InkWell(
+                      onTap: ()
+                      {
 
                       },
-                    ),
+                      child: Container(
+                        margin: EdgeInsets.symmetric(
+                            horizontal: 15),
+                        height:40,
+                        width: 50,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[200],
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(child: Icon(Ionicons.logo_twitter,color: Colors.blue)),
+
+                      ),
+                    )
+
                   ],
                 ),
                 SizedBox(height: 20),
@@ -252,11 +383,13 @@ class _SigninScreenState extends State<SigninScreen> {
                       style:
                           TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                     ),
-                    GestureDetector(
+                    InkWell(
                       onTap: () {
+
+
                         // Get.to(Signup());
-                        // Navigator.of(context).push(MaterialPageRoute(
-                        //     builder: (BuildContext context) => Signup()));
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (BuildContext context) =>  Signup()));
                       },
                       child: Text(
                         "Sign Up",
