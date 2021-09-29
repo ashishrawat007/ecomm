@@ -1,8 +1,8 @@
 
+import 'package:e_comm/helper_function/shared_Pref.dart';
 import 'package:e_comm/services/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
@@ -61,13 +61,19 @@ class GoogleSigninProvider extends ChangeNotifier
 
   registration(String name,String pNo ,String email,String password, String confirmPassword,context) async {
     if (password == confirmPassword) {
-
-
       try {
         print("hello");
         UserCredential credential = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(email: email, password: password);
         print(credential);
+        SharedPreferenceHelper().saveUserEmail(email);
+        SharedPreferenceHelper().saveUserId(credential.user!.uid);
+        SharedPreferenceHelper().saveUserName(name);
+        SharedPreferenceHelper().saveDisplayName(name);
+        SharedPreferenceHelper().saveUserProfileUrl("");
+
+
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             backgroundColor: Colors.redAccent,
@@ -89,6 +95,7 @@ class GoogleSigninProvider extends ChangeNotifier
 
         DatabaseModels()
             .addUserInfoToDB(credential.user!.uid,userInfoMap  );
+
       print(FirebaseAuth.instance.currentUser);
         await FirebaseAuth.instance.signOut();
         Navigator.pop(context);

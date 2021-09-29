@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:e_comm/map/get_location.dart';
 import 'package:e_comm/provider/google_signin_provider.dart';
 import 'package:e_comm/screens/sign_in.dart';
 import 'package:e_comm/screens/signup.dart';
+import 'package:e_comm/services/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -18,6 +20,38 @@ class LoggedInScreen extends StatefulWidget {
 
 class _LoggedInScreenState extends State<LoggedInScreen> {
   final user = FirebaseAuth.instance.currentUser;
+  Stream? chatRoomsStream;
+  getChatRooms() async {
+    chatRoomsStream = await DatabaseModels().getChatRooms();
+    setState(() {});
+  }
+
+  onScreenLoaded() async {
+    //await getMyInfoFromSharedPreference();
+    getChatRooms();
+  }
+  Widget chatRoomsList() {
+    return StreamBuilder<QuerySnapshot>(
+      stream: chatRoomsStream,
+      builder: (context, snapshot) {
+        return snapshot.hasData
+            ? ListView.builder(
+            itemCount: snapshot.data!.docs.length,
+            shrinkWrap: true,
+            itemBuilder: (context, index) {
+              DocumentSnapshot ds = snapshot.data.docs[index];
+              return ChatRoomListTile(ds["lastMessage"], ds.id, myUserName);
+            })
+            : Center(child: CircularProgressIndicator());
+      },
+    );
+  }
+
+  @override
+  void initState() {
+    onScreenLoaded();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,12 +67,6 @@ class _LoggedInScreenState extends State<LoggedInScreen> {
     print(email);
 
     String name;
-
-    // FirebaseFirestore.instance
-    //     .collection('users')
-    //     .doc(user!.uid)
-    //     .get();
-
 
     TextEditingController _contoller = TextEditingController();
     //FirebaseAuth.instance.currentUser!.updateDisplayName();
@@ -166,9 +194,9 @@ class _LoggedInScreenState extends State<LoggedInScreen> {
                   ),
                   ListTile(
                     onTap: (){
-                      // Navigator.of(context).pushNamed(
-                      //   OrdersScreen.routeName,
-                     // );
+                      Navigator.push(
+                        context, MaterialPageRoute(builder: (context) => GetLocation()),
+                      );
                     },
                     leading: Icon(Icons.shopping_bag_sharp,color: Colors.deepPurpleAccent),
 
@@ -246,55 +274,7 @@ class _LoggedInScreenState extends State<LoggedInScreen> {
       appBar: AppBar(
         title: Text("hello"),
       ),
-      body:StreamBuilder(
-          stream: FirebaseAuth.instance.authStateChanges(),
-          builder: (BuildContext context, snapshot)
-          {
-             if(snapshot.hasData )
-              return SafeArea(
-          child: Column(
-            children: [
-              Center(
-                child: Container(
-                    height: 100,
-                    child: imgUrl == "no image available"
-                        ? Text("Upload Image")
-                        : Image.network(imgUrl)),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Text(
-                userName,
-                style: TextStyle(fontSize: 20),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Text(
-                email,
-                style: TextStyle(fontSize: 20),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              ElevatedButton(
-                  onPressed: () async {
-                    final provider = Provider.of<GoogleSigninProvider>(context,
-                        listen: false);
-                    await provider.logout();
-                    print("hello");
-                  },
-                  child: Text("logout from ")),
-              SizedBox(
-                height: 10,
-              ),
-            ],
-          ),
-        );
-             else
-               return SigninScreen();
-      }),
+      body:chatRoomsList(),
     );
   }
 }

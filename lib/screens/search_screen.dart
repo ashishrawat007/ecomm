@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:e_comm/services/database.dart';
@@ -16,6 +17,21 @@ final searchController = TextEditingController();
 class _SearchScreenState extends State<SearchScreen> {
       bool isSearching = false;
      late Stream usersStream ;
+     late String myName, myProfilePic, myEmail;
+
+      getMyInfoFromSharedPreference() async {
+
+        setState(() {});
+      }
+
+      getChatRoomId(String a, String b) {
+        if (a.substring(0, 1).codeUnitAt(0) > b.substring(0, 1).codeUnitAt(0)) {
+          return "$b\_$a";
+
+        } else {
+          return "$a\_$b";
+        }
+      }
 
   Widget searchUsersList()
   {
@@ -29,14 +45,14 @@ class _SearchScreenState extends State<SearchScreen> {
         {
         print(snapshot.data!.docs.length);
         return  ListView.builder(
-    shrinkWrap: true,
+        shrinkWrap: true,
 
-    itemCount: snapshot.data!.docs.length,
+        itemCount: snapshot.data!.docs.length,
 
-    itemBuilder:(BuildContext ctxt, int index)
-    {
+        itemBuilder:(BuildContext ctxt, int index)
+        {
 
-      List<DocumentSnapshot> documents = snapshot.data!.docs;
+         List<DocumentSnapshot> documents = snapshot.data!.docs;
       // print(documents[index]['email']);
       return   Card(
         child: Padding(
@@ -54,15 +70,37 @@ class _SearchScreenState extends State<SearchScreen> {
 
               Spacer(),
               InkWell(
-                onTap: () {
-                  // String current =  ;
-                  // String receiver = ;
-                  String id = DatabaseModels().getChatRoomIdByUsernames(
-                      FirebaseAuth.instance.currentUser!.uid.toString(),documents[index]['uid'].toString() );
-                  Navigator.push(
+                onTap: () async {
+                   String CurrentUSerid  =   FirebaseAuth.instance.currentUser!.uid.toString();
+                   //String CurrentUserName  =   FirebaseAuth.instance.currentUser!..toString();
+                   //String CurrentUserName =  documents[index]['name'].toString();
+                   QuerySnapshot querySnapshot = await  DatabaseModels().getUserInfo( FirebaseAuth.instance.currentUser!.uid);
+
+
+                  String CurrentUserName = "${querySnapshot.docs[0]["name"]}";
+                   print(CurrentUserName);
+                 //  print(CurrentUserName);
+
+                 String ReceiverUserid   =  documents[index]['uid'];
+                 String ReceiverUserName =  documents[index]['name'];
+                 String ReceiverUserImage =  documents[index]['imgUrl'];
+
+
+                  print(ReceiverUserName);
+                  String chatRoomId = await getChatRoomId(CurrentUSerid,ReceiverUserid);
+
+
+                   Map<String, dynamic> chatRoomInfoMap = {
+                     "users": [CurrentUserName, ReceiverUserName]
+                   };
+                   DatabaseModels().createChatRoom(chatRoomId, chatRoomInfoMap);
+
+
+                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => ChatScreen(id)),
-                  );
+                    MaterialPageRoute(builder: (context) =>
+                        ChatScreen(chatRoomId,ReceiverUserName,ReceiverUserImage )),
+                 );
 
                 },
                 child: Padding(
@@ -114,6 +152,7 @@ class _SearchScreenState extends State<SearchScreen> {
     );
 
   }
+
  @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -159,7 +198,7 @@ class _SearchScreenState extends State<SearchScreen> {
               ),
               ElevatedButton(
                   onPressed: () async {
-                    //usersStream = ;
+                   //usersStream = ;
                     isSearching = true ;
                     setState(() {
 

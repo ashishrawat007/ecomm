@@ -9,27 +9,6 @@ import 'package:encrypt/encrypt.dart' as encrypt;
 
 
 Future main() async {
-
-  final plainText = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit';
-
-  final key = encrypt.Key.fromLength(32);
-  final iv = IV.fromLength(16);
-  final encrypter = Encrypter(AES(key));
-
-  final encrypted = encrypter.encrypt(plainText, iv: iv);
-  final decrypted = encrypter.decrypt(encrypted, iv: iv);
-
-  print("hello");
-  print(decrypted);
-  print("hello");
-  print(encrypted.bytes);
-  print("hello");
-
-  print(encrypted.base16);
-  print("hello");
-
-  print(encrypted.base64);
-  print(decrypted);
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(MyApp());
@@ -45,6 +24,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => GoogleSigninProvider()),
       ],
       child : MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
         theme: ThemeData(
           primarySwatch: Colors.blue,

@@ -4,7 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_awesome_buttons/flutter_awesome_buttons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_signin_button/button_view.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -242,7 +241,6 @@ class _SigninScreenState extends State<SigninScreen> {
                 ),
                 SizedBox(height: 20),
                 InkWell(
-
                   onTap: () {
                     Navigator.push(
                       context,
@@ -328,7 +326,7 @@ class _SigninScreenState extends State<SigninScreen> {
                           color: Colors.grey[200],
                           shape: BoxShape.circle,
                         ),
-                        child: Center(child: Icon(Ionicons.logo_facebook,color: Colors.blue[700])),
+                        child: Center(child: Icon(Icons.ac_unit_outlined,color: Colors.blue[700])),
 
                       ),
                     ),
@@ -349,7 +347,7 @@ class _SigninScreenState extends State<SigninScreen> {
                           color: Colors.grey[200],
                           shape: BoxShape.circle,
                         ),
-                        child: Center(child: Icon(Ionicons.logo_google,color: Colors.red)),
+                        child: Center(child: Icon(Icons.ac_unit_outlined,color: Colors.red)),
 
                       ),
                     ),
@@ -367,7 +365,7 @@ class _SigninScreenState extends State<SigninScreen> {
                           color: Colors.grey[200],
                           shape: BoxShape.circle,
                         ),
-                        child: Center(child: Icon(Ionicons.logo_twitter,color: Colors.blue)),
+                        child: Center(child: Icon(Icons.ac_unit_outlined,color: Colors.blue)),
 
                       ),
                     )

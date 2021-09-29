@@ -2,7 +2,7 @@ import 'package:e_comm/provider/google_signin_provider.dart';
 import 'package:e_comm/screens/phone_auth_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_awesome_buttons/flutter_awesome_buttons.dart';
-import 'package:flutter_icons/flutter_icons.dart';
+
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
@@ -235,14 +235,6 @@ class _SignupState extends State<Signup> {
                   padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
                   child: InkWell(
                     onTap: () {
-                      // if (_formKey.currentState!.validate()) {
-                      //   setState(() {
-                      //     email = emailController.text;
-                      //     password = passController.text;
-                      //     confirmPassword = RePassController.text;
-                      //     name = nameController.text ;
-                      //     pNo = phoneController.text;
-                      //   });
 
                       email = emailController.text;
                           password = passController.text;
@@ -255,10 +247,6 @@ class _SignupState extends State<Signup> {
 
                         provider.registration(name ,pNo,email, password,confirmPassword,context);
 
-
-
-
-                     // provider.signUp(email, pass,RePass ,context);
                     },
                     child: Container(
                       height:  MediaQuery.of(context).size.height  * 0.0550,
@@ -336,7 +324,7 @@ class _SignupState extends State<Signup> {
                           color: Colors.grey[200],
                           shape: BoxShape.circle,
                         ),
-                        child: Center(child: Icon(Ionicons.logo_facebook,color: Colors.blue[700])),
+                        child: Center(child: Icon(Icons.ac_unit_outlined,color: Colors.blue[700])),
 
                       ),
                     ),
@@ -357,7 +345,7 @@ class _SignupState extends State<Signup> {
                           color: Colors.grey[200],
                           shape: BoxShape.circle,
                         ),
-                        child: Center(child: Icon(Ionicons.logo_google,color: Colors.red)),
+                        child: Center(child: Icon(Icons.ac_unit_outlined,color: Colors.red)),
 
                       ),
                     ),
@@ -375,7 +363,7 @@ class _SignupState extends State<Signup> {
                           color: Colors.grey[200],
                           shape: BoxShape.circle,
                         ),
-                        child: Center(child: Icon(Ionicons.logo_twitter,color: Colors.blue)),
+                        child: Center(child: Icon(Icons.ac_unit_outlined,color: Colors.blue)),
 
                       ),
                     )
